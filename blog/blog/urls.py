@@ -19,11 +19,11 @@ from rest_framework import routers, serializers, viewsets, permissions
 from app import views
 
 router = routers.DefaultRouter()
-router.register(r'test', views.Test)
-router.register(r'blog2', views.Blog2)
+router.register(r'blog2', views.Blog2View)
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
+    path('', include('app.urls')),
+    
 ]

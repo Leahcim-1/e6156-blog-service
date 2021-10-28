@@ -4,7 +4,11 @@ from django.db import models
 
 
 class Test(models.Model):
-  name = models.IntegerField()
+  name = models.CharField(max_length=100, blank=True, default='')
+  created = models.DateTimeField(auto_now_add=True)
+
+  class Meta:
+        ordering = ['created']
 
 
 class Blog2(models.Model):

@@ -2,10 +2,11 @@ from rest_framework import serializers
 from .models import Test, Blog2
 
 
-class TestSerializer(serializers.HyperlinkedModelSerializer):
+class TestSerializer(serializers.ModelSerializer):
     class Meta:
         model = Test
-        fields = ['name']
+        fields = ['id', 'name', 'created']
+
 
 class Blog2Serializer(serializers.HyperlinkedModelSerializer):
     class Meta:
