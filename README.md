@@ -31,3 +31,12 @@ yuanboli$ mysql -h database-1.crentgyphipj.us-east-1.rds.amazonaws.com -P 3306 -
 
 upload file to ec2 instance:
 scp -i ~/Desktop/"hw3_t1.pem" -r e6156-blog-service/ ec2-user@ec2-54-84-66-191.compute-1.amazonaws.com:t1/
+
+Allow Host:
+/blog/settings.py
+ALLOWED_HOSTS = ['ec2-54-84-66-191.compute-1.amazonaws.com']
+
+Add Security rule:
+IPv4 Custom TCP TCP 8000 0.0.0.0/0
+
+python3 manage.py runserver 0.0.0.0:8000
