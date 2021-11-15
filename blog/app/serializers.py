@@ -10,7 +10,7 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
         # Instantiate the superclass normally
         super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
 
-        if len(fields) > 0:
+        if fields is not None:
             # Drop any fields that are not specified in the `fields` argument.
             allowed = set(fields)
             existing = set(self.fields)
