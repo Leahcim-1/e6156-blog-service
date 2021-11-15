@@ -17,30 +17,70 @@ class blog_list(APIView):
  
     @staticmethod
     def create_response(message, data, links):
-        return JsonResponse({
-            message,
-            data,
-            links,
-        })
+        return {
+            "message": message,
+            "data": data,
+            "links": links,
+        }
+    
+    @staticmethod
+    def get_links(limit, offset):
+        print(limit, offset)
+        query_str = "limit=%s&offset=%s"
+        cur = query_str % (limit, offset)
+        next = query_str % (limit, offset + limit)
+        prev = query_str % (limit, offset - limit) if offset >= limit else ""
+
+        return {
+            "cur": cur,
+            "prev": prev,
+            "next": next,
+        }
+
 
 
     def get(self, request, format=None):
+        print( )
         fields = request.query_params.get('fields', [])
         limit = request.query_params.get('limit', [])
         offset = request.query_params.get('offset', [])
 
         blogObjs = Blog2.objects.all()
 
+        links = []
         if limit and offset:
-            start = int(offset[0])
-            end = start + int(limit[0])
+            ofs = int(offset[0])
+            lim = int(limit[0])
+            start = lim
+            end = start + ofs
             blogObjs = blogObjs[start:end]
+            page = blog_list.get_links(lim, ofs)
+            links = [
+                {
+                    "rel": "cur",
+                    "link": request.path + "?" + page.get('cur')
+                },
+                {
+                    "rel": "next",
+                    "link": request.path + "?" + page.get('next')
+                },
+            ]
+            if ofs >= lim:
+                links.append({
+                    "rel": "prev",
+                    "link": request.path + "?" + page.get('prev')
+                })
 
         if fields:
             fields = fields.split(',')
 
         serializer = Blog2Serializer(blogObjs, many=True, fields=fields)
-        return Response(serializer.data)
+        res = blog_list.create_response(
+            message = "OK",
+            data = serializer.data,
+            links = links
+        )
+        return Response(res)
 
     def post(self, request, format=None):
         serializer = Blog2Serializer(data=request.data)
