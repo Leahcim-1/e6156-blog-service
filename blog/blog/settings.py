@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-*%tt4w4bpcc#e1*f#fjoce_yg+ret#^f%o&m38*w5a3@_43l)^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = [
+    '127.0.0.1',
+    '0.0.0.0'
+]
 
 
 # Application definition
@@ -75,6 +78,8 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+
+# ! Security Issue!!
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
