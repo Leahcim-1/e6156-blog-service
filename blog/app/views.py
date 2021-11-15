@@ -1,3 +1,4 @@
+from django.db.models import fields
 from django.shortcuts import render
 from .models import Blog2
 from django.http import HttpResponse, JsonResponse
@@ -9,15 +10,36 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from .serializers import Blog2Serializer
 from rest_framework import generics, status
-import django_filters.rest_framework
 
 
 
 class blog_list(APIView):
+ 
+    @staticmethod
+    def create_response(message, data, links):
+        return JsonResponse({
+            message,
+            data,
+            links,
+        })
+
 
     def get(self, request, format=None):
+        fields = request.query_params.get('fields', [])
+        limit = request.query_params.get('limit', [])
+        offset = request.query_params.get('offset', [])
+
         blogObjs = Blog2.objects.all()
-        serializer = Blog2Serializer(blogObjs, many=True)
+
+        if limit and offset:
+            start = int(offset[0])
+            end = start + int(limit[0])
+            blogObjs = blogObjs[start:end]
+
+        if fields:
+            fields = fields.split(',')
+
+        serializer = Blog2Serializer(blogObjs, many=True, fields=fields)
         return Response(serializer.data)
 
     def post(self, request, format=None):
