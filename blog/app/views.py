@@ -91,6 +91,14 @@ class blog_list(APIView):
 
 class blog_detail(APIView):
 
+    @staticmethod
+    def create_response(message, data, links):
+        return {
+            "message": message,
+            "data": data,
+            "links": links,
+        }
+
     def get_object(self, pk):
         try:
             return Blog2.objects.get(pk=pk)
@@ -100,7 +108,8 @@ class blog_detail(APIView):
     def get(self, request, pk, format=None):
         this_blog = self.get_object(pk)
         serializer = Blog2Serializer(this_blog)
-        return Response(serializer.data)
+        res = blog_detail.create_response("OK", serializer.data, [])
+        return Response(res)
 
     def put(self, request, pk, format=None):
         this_blog = self.get_object(pk)
