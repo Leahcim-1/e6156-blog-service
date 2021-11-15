@@ -74,7 +74,6 @@ class blog_list(APIView):
 
         serializer = Blog2Serializer(blogObjs, many=True, fields=tuple(fields))
 
-        print(serializer.data)
         res = blog_list.create_response(
             message = "OK",
             data = serializer.data,
@@ -108,7 +107,7 @@ class blog_detail(APIView):
     def get(self, request, pk, format=None):
         this_blog = self.get_object(pk)
         serializer = Blog2Serializer(this_blog)
-        res = blog_detail.create_response("OK", serializer.data, [])
+        res = blog_detail.create_response("OK", [serializer.data], [])
         return Response(res)
 
     def put(self, request, pk, format=None):
