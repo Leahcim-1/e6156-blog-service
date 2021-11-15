@@ -25,7 +25,6 @@ class blog_list(APIView):
     
     @staticmethod
     def get_links(limit, offset):
-        print(limit, offset)
         query_str = "limit=%s&offset=%s"
         cur = query_str % (limit, offset)
         next = query_str % (limit, offset + limit)
@@ -40,7 +39,6 @@ class blog_list(APIView):
 
 
     def get(self, request, format=None):
-        print( )
         fields = request.query_params.get('fields', [])
         limit = request.query_params.get('limit', [])
         offset = request.query_params.get('offset', [])
@@ -74,7 +72,9 @@ class blog_list(APIView):
         if fields:
             fields = fields.split(',')
 
-        serializer = Blog2Serializer(blogObjs, many=True, fields=fields)
+        serializer = Blog2Serializer(blogObjs, many=True, fields=tuple(fields))
+
+        print(serializer.data)
         res = blog_list.create_response(
             message = "OK",
             data = serializer.data,
