@@ -88,7 +88,7 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 't1',
+        'NAME': 'HW2_new',
         'USER': 'admin',
         'PASSWORD': 'CloudComputing',
         'HOST': 'database-1.crentgyphipj.us-east-1.rds.amazonaws.com',

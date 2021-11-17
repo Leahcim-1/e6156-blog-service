@@ -49,8 +49,8 @@ class blog_list(APIView):
         if limit and offset:
             ofs = int(offset[0])
             lim = int(limit[0])
-            start = lim
-            end = start + ofs
+            start = ofs
+            end = start + lim
             blogObjs = blogObjs[start:end]
             page = blog_list.get_links(lim, ofs)
             links = [
