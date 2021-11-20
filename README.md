@@ -40,3 +40,12 @@ Add Security rule:
 IPv4 Custom TCP TCP 8000 0.0.0.0/0
 
 python3 manage.py runserver 0.0.0.0:8000
+
+
+Api GateWay:
+base: https://uwu5f8dejb.execute-api.us-east-1.amazonaws.com/t2/test
+append ids: https://uwu5f8dejb.execute-api.us-east-1.amazonaws.com/t2/test/1
+
+Cloud Front:
+base:https://d339yyb5akm0ol.cloudfront.net/test/
+append ids:https://d339yyb5akm0ol.cloudfront.net/test/1
