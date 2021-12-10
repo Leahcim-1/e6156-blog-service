@@ -1,5 +1,4 @@
 from django.db import models
-from unixtimestampfield.fields import UnixTimeStampField
 
 
 # Create your models here.

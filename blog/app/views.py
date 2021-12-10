@@ -2,7 +2,7 @@ from django.db.models import fields
 from django.shortcuts import render
 from .models import Blog2
 from django.http import HttpResponse, JsonResponse
-
+import time
 
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
@@ -43,12 +43,14 @@ class blog_list(APIView):
         limit = request.query_params.get('limit', [])
         offset = request.query_params.get('offset', [])
 
+        print(limit, offset)
+
         blogObjs = Blog2.objects.all()
 
         links = []
         if limit and offset:
-            ofs = int(offset[0])
-            lim = int(limit[0])
+            ofs = int(offset)
+            lim = int(limit)
             start = ofs
             end = start + lim
             blogObjs = blogObjs[start:end]
@@ -82,7 +84,10 @@ class blog_list(APIView):
         return Response(res)
 
     def post(self, request, format=None):
-        serializer = Blog2Serializer(data=request.data)
+        data = request.data
+        data['create_time'] = int(time.time() * 1000)
+        data['update_time'] = int(time.time() * 1000)
+        serializer = Blog2Serializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -112,7 +117,9 @@ class blog_detail(APIView):
 
     def put(self, request, pk, format=None):
         this_blog = self.get_object(pk)
-        serializer = Blog2Serializer(this_blog, data=request.data)
+        data=request.data
+        data['update_time'] = int(time.time() * 1000)
+        serializer = Blog2Serializer(this_blog, data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
