@@ -84,6 +84,7 @@ class blog_list(APIView):
         return Response(res)
 
     def post(self, request, format=None):
+        print(request.data)
         data = request.data
         data['create_time'] = int(time.time() * 1000)
         data['update_time'] = int(time.time() * 1000)
@@ -91,10 +92,10 @@ class blog_list(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class blog_detail(APIView):
-
     @staticmethod
     def create_response(message, data, links):
         return {
@@ -129,3 +130,52 @@ class blog_detail(APIView):
         this_blog = self.get_object(pk)
         this_blog.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class User_Blog(APIView):
+    @staticmethod
+    def create_response(message, data, links):
+        return {
+            "message": message,
+            "data": data,
+            "links": links,
+        }
+    
+    def get(self, request, pk, format=None):
+        fields = request.query_params.get('fields', [])
+        limit = request.query_params.get('limit', [])
+        offset = request.query_params.get('offset', [])
+
+        filter_blogs = Blog2.objects.filter(user_id=pk)
+
+        links = []
+        if limit and offset:
+            ofs = int(offset)
+            lim = int(limit)
+            start = ofs
+            end = start + lim
+            filter_blogs = filter_blogs[start:end]
+            page = blog_list.get_links(lim, ofs)
+            links = [
+                {
+                    "rel": "cur",
+                    "link": request.path + "?" + page.get('cur')
+                },
+                {
+                    "rel": "next",
+                    "link": request.path + "?" + page.get('next')
+                },
+            ]
+            if ofs >= lim:
+                links.append({
+                    "rel": "prev",
+                    "link": request.path + "?" + page.get('prev')
+                })
+
+        if fields:
+            fields = fields.split(',')
+
+
+        serializer = Blog2Serializer(filter_blogs, many=True, fields=tuple(fields))
+        res = User_Blog.create_response("OK", [serializer.data], links)
+        return Response(res)
