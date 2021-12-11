@@ -45,7 +45,7 @@ class blog_list(APIView):
 
         print(limit, offset)
 
-        blogObjs = Blog2.objects.all()
+        blogObjs = Blog2.objects.all().order_by('-id')
 
         links = []
         if limit and offset:
@@ -146,7 +146,7 @@ class User_Blog(APIView):
         limit = request.query_params.get('limit', [])
         offset = request.query_params.get('offset', [])
 
-        filter_blogs = Blog2.objects.filter(user_id=pk)
+        filter_blogs = Blog2.objects.filter(user_id=pk).order_by('-id')
 
         links = []
         if limit and offset:
