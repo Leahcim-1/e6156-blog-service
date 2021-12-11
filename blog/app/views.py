@@ -10,6 +10,30 @@ from rest_framework.response import Response
 from rest_framework.parsers import JSONParser
 from .serializers import Blog2Serializer
 from rest_framework import generics, status
+import boto3
+from botocore.config import Config
+
+my_config = Config(
+    region_name = 'us-west-2',
+    signature_version = 'v4',
+    retries = {
+        'max_attempts': 10,
+        'mode': 'standard'
+    }
+)
+
+client = boto3.client(
+    'sns',
+    config=my_config,
+)
+
+
+def publish_sns(msg):
+    client = boto3.client('sns')
+    txt_msg = json.dumps(msg)
+
+    client.publish(TopicArn="arn:aws:sns:us-east-1:<something>",
+                   Message=txt_msg)
 
 
 
@@ -83,17 +107,18 @@ class blog_list(APIView):
         )
         return Response(res)
 
+
     def post(self, request, format=None):
         print(request.data)
         data = request.data
-        data['create_time'] = int(time.time() * 1000)
-        data['update_time'] = int(time.time() * 1000)
         serializer = Blog2Serializer(data=data)
         if serializer.is_valid():
             serializer.save()
+            publish_sns("Someone post a blog")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         print(serializer.errors)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 class blog_detail(APIView):
     @staticmethod
@@ -146,7 +171,7 @@ class User_Blog(APIView):
         limit = request.query_params.get('limit', [])
         offset = request.query_params.get('offset', [])
 
-        filter_blogs = Blog2.objects.filter(user_id=pk).order_by('-id')
+        filter_blogs = Blog2.objects.filter(user_id=str(pk)).order_by('-id')
 
         links = []
         if limit and offset:
@@ -177,5 +202,5 @@ class User_Blog(APIView):
 
 
         serializer = Blog2Serializer(filter_blogs, many=True, fields=tuple(fields))
-        res = User_Blog.create_response("OK", [serializer.data], links)
+        res = User_Blog.create_response("OK", serializer.data, links)
         return Response(res)
