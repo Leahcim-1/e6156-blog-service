@@ -3,7 +3,6 @@ from django.shortcuts import render
 from .models import Blog2
 from django.http import HttpResponse, JsonResponse
 import time
-
 from rest_framework import viewsets, permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -12,14 +11,12 @@ from .serializers import Blog2Serializer
 from rest_framework import generics, status
 import boto3
 from botocore.config import Config
+import json
+import requests
 
 my_config = Config(
     region_name = 'us-west-2',
     signature_version = 'v4',
-    retries = {
-        'max_attempts': 10,
-        'mode': 'standard'
-    }
 )
 
 client = boto3.client(
@@ -29,11 +26,7 @@ client = boto3.client(
 
 
 def publish_sns(msg):
-    client = boto3.client('sns')
-    txt_msg = json.dumps(msg)
-
-    client.publish(TopicArn="arn:aws:sns:us-east-1:<something>",
-                   Message=txt_msg)
+    res = requests.post('https://bguzs8d4t5.execute-api.us-west-2.amazonaws.com/default/slack-alert')
 
 
 
